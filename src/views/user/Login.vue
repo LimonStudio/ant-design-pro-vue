@@ -60,7 +60,21 @@
               ]"
             >
               <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }" />
-              <img slot="addonAfter" :src="code.src" />
+              <img slot="addonAfter" :src="code.src" @click="refreshCode()" />
+            </a-input>
+          </a-form-item>
+          <a-form-item>
+            <a-input
+              size="large"
+              type="text"
+              autocomplete="false"
+              placeholder="随机数: 1234567890"
+              v-decorator="[
+                'randomStr',
+                {rules: [{ required: true, message: '请输入随机数' }], validateTrigger: 'blur'}
+              ]"
+            >
+              <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }" />
             </a-input>
           </a-form-item>
         </a-tab-pane>
@@ -182,7 +196,6 @@ export default {
     }
   },
   created () {
-    this.refreshCode()
     get2step({})
       .then(res => {
         this.requiredTwoStepCaptcha = res.result.stepCode
@@ -192,14 +205,19 @@ export default {
       })
     // this.requiredTwoStepCaptcha = true
   },
+  mounted () {
+    this.refreshCode()
+  },
   methods: {
     ...mapActions(['Login', 'Logout']),
     refreshCode () {
-      this.form.code = ''
-      this.form.randomStr = randomLenNum(this.code.len, true)
-      this.code.type === 'text'
-        ? (this.code.value = randomLenNum(this.code.len))
-        : (this.code.src = `/api/code?randomStr=${this.form.randomStr}`)
+      const randomStr = randomLenNum(this.code.len, true)
+      console.log(randomStr)
+      this.form.setFieldsValue({
+        code: '',
+        randomStr: randomStr
+      })
+      this.code.type === 'text' ? (this.code.value = randomStr) : (this.code.src = `/api/code?randomStr=${randomStr}`)
     },
     // handler
     handleUsernameOrEmail (rule, value, callback) {
@@ -237,6 +255,8 @@ export default {
           delete loginParams.username
           loginParams[!state.loginType ? 'email' : 'username'] = values.username
           loginParams.password = values.password
+          loginParams.randomStr = values.randomStr
+          console.log('loginParams form', loginParams)
           Login(loginParams)
             .then(res => this.loginSuccess(res))
             .catch(err => this.requestFailed(err))

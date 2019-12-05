@@ -35,14 +35,8 @@ const user = {
   actions: {
     // 登录
     Login ({ commit }, userInfo) {
-      const form = {
-        username: userInfo.username,
-        password: userInfo.password,
-        code: userInfo.code,
-        redomStr: ''
-      }
       const user = encryption({
-        data: form,
+        data: userInfo,
         key: 'gdscloudprisbest',
         param: ['password']
       })
