@@ -48,6 +48,21 @@
               <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }" />
             </a-input>
           </a-form-item>
+          <a-form-item>
+            <a-input
+              size="large"
+              type="text"
+              autocomplete="false"
+              placeholder="验证码: 1234"
+              v-decorator="[
+                'code',
+                {rules: [{ required: true, message: '请输入验证码' }], validateTrigger: 'blur'}
+              ]"
+            >
+              <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }" />
+              <img slot="addonAfter" :src="code.src" />
+            </a-input>
+          </a-form-item>
         </a-tab-pane>
         <a-tab-pane key="tab2" tab="手机号登录">
           <a-form-item>
@@ -132,18 +147,23 @@
 </template>
 
 <script>
-import md5 from 'md5'
 import TwoStepCaptcha from '@/components/tools/TwoStepCaptcha'
 import { mapActions } from 'vuex'
-import { timeFix } from '@/utils/util'
+import { timeFix, randomLenNum } from '@/utils/util'
 import { getSmsCaptcha, get2step } from '@/api/login'
 
 export default {
   components: {
     TwoStepCaptcha
   },
-  data() {
+  data () {
     return {
+      code: {
+        src: '/code',
+        value: '',
+        len: 4,
+        type: 'image'
+      },
       customActiveKey: 'tab1',
       loginBtn: false,
       // login type: 0 email, 1 username, 2 telephone
@@ -161,7 +181,8 @@ export default {
       }
     }
   },
-  created() {
+  created () {
+    this.refreshCode()
     get2step({})
       .then(res => {
         this.requiredTwoStepCaptcha = res.result.stepCode
@@ -173,8 +194,15 @@ export default {
   },
   methods: {
     ...mapActions(['Login', 'Logout']),
+    refreshCode () {
+      this.form.code = ''
+      this.form.randomStr = randomLenNum(this.code.len, true)
+      this.code.type === 'text'
+        ? (this.code.value = randomLenNum(this.code.len))
+        : (this.code.src = `/api/code?randomStr=${this.form.randomStr}`)
+    },
     // handler
-    handleUsernameOrEmail(rule, value, callback) {
+    handleUsernameOrEmail (rule, value, callback) {
       const { state } = this
       const regex = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+((\.[a-zA-Z0-9_-]{2,3}){1,2})$/
       if (regex.test(value)) {
@@ -184,11 +212,11 @@ export default {
       }
       callback()
     },
-    handleTabClick(key) {
+    handleTabClick (key) {
       this.customActiveKey = key
       // this.form.resetFields()
     },
-    handleSubmit(e) {
+    handleSubmit (e) {
       e.preventDefault()
       const {
         form: { validateFields },
@@ -199,7 +227,8 @@ export default {
 
       state.loginBtn = true
 
-      const validateFieldsKey = customActiveKey === 'tab1' ? ['username', 'password'] : ['mobile', 'captcha']
+      const validateFieldsKey =
+        customActiveKey === 'tab1' ? ['username', 'password', 'code', 'randomStr'] : ['mobile', 'captcha']
 
       validateFields(validateFieldsKey, { force: true }, (err, values) => {
         if (!err) {
@@ -207,7 +236,7 @@ export default {
           const loginParams = { ...values }
           delete loginParams.username
           loginParams[!state.loginType ? 'email' : 'username'] = values.username
-          loginParams.password = md5(values.password)
+          loginParams.password = values.password
           Login(loginParams)
             .then(res => this.loginSuccess(res))
             .catch(err => this.requestFailed(err))
@@ -221,7 +250,7 @@ export default {
         }
       })
     },
-    getCaptcha(e) {
+    getCaptcha (e) {
       e.preventDefault()
       const {
         form: { validateFields },
@@ -260,16 +289,16 @@ export default {
         }
       })
     },
-    stepCaptchaSuccess() {
+    stepCaptchaSuccess () {
       this.loginSuccess()
     },
-    stepCaptchaCancel() {
+    stepCaptchaCancel () {
       this.Logout().then(() => {
         this.loginBtn = false
         this.stepCaptchaVisible = false
       })
     },
-    loginSuccess(res) {
+    loginSuccess (res) {
       console.log(res)
       // check res.homePage define, set $router.push name res.homePage
       // Why not enter onComplete
@@ -292,7 +321,7 @@ export default {
       }, 1000)
       this.isLoginError = false
     },
-    requestFailed(err) {
+    requestFailed (err) {
       this.isLoginError = true
       this.$notification['error']({
         message: '错误',

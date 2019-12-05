@@ -1,6 +1,7 @@
 import api from './index'
 import { axios } from '@/utils/request'
 
+const scope = 'server'
 /**
  * login func
  * parameter: {
@@ -12,11 +13,21 @@ import { axios } from '@/utils/request'
  * @param parameter
  * @returns {*}
  */
-export function login (parameter) {
+export function login (user) {
+  const grantType = 'password'
   return axios({
-    url: '/auth/login',
+    url: '/auth/oauth/token',
     method: 'post',
-    data: parameter
+    headers: {
+      isToken: false,
+      TENANT_ID: '1',
+      Authorization: 'Basic Z2RzOmdkcw=='
+    },
+    params: {
+      ...user,
+      grant_type: grantType,
+      scope
+    }
   })
 }
 

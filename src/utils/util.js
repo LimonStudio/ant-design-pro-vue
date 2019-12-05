@@ -1,3 +1,4 @@
+import CryptoJS from 'crypto-js'
 export function timeFix () {
   const time = new Date()
   const hour = time.getHours()
@@ -24,7 +25,7 @@ export function handleScrollHeader (callback) {
   let timer = 0
 
   let beforeScrollTop = window.pageYOffset
-  callback = callback || function () {}
+  callback = callback || function () { }
   window.addEventListener(
     'scroll',
     event => {
@@ -64,4 +65,43 @@ export function removeLoadingAnimate (id = '', timeout = 1500) {
   setTimeout(() => {
     document.body.removeChild(document.getElementById(id))
   }, timeout)
+}
+/**
+ * 生成随机len位数字
+ */
+export const randomLenNum = (len, date) => {
+  let random = ''
+  random = Math.ceil(Math.random() * 100000000000000)
+    .toString()
+    .substr(0, len || 4)
+  if (date) random = random + Date.now()
+  return random
+}
+
+/**
+ *加密处理
+ */
+export const encryption = (params) => {
+  // eslint-disable-next-line prefer-const
+  let { data, type, param, key } = params
+  const result = JSON.parse(JSON.stringify(data))
+  if (type === 'Base64') {
+    param.forEach((ele) => {
+      result[ele] = btoa(result[ele])
+    })
+  } else {
+    param.forEach((ele) => {
+      var data = result[ele]
+      key = CryptoJS.enc.Latin1.parse(key)
+      var iv = key
+      // 加密
+      var encrypted = CryptoJS.AES.encrypt(data, key, {
+        iv: iv,
+        mode: CryptoJS.mode.CBC,
+        padding: CryptoJS.pad.ZeroPadding
+      })
+      result[ele] = encrypted.toString()
+    })
+  }
+  return result
 }

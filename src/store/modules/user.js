@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import { login, getInfo, logout } from '@/api/login'
 import { ACCESS_TOKEN } from '@/store/mutation-types'
-import { welcome } from '@/utils/util'
+import { welcome, encryption } from '@/utils/util'
 
 const user = {
   state: {
@@ -35,8 +35,19 @@ const user = {
   actions: {
     // 登录
     Login ({ commit }, userInfo) {
+      const form = {
+        username: userInfo.username,
+        password: userInfo.password,
+        code: userInfo.code,
+        redomStr: ''
+      }
+      const user = encryption({
+        data: form,
+        key: 'gdscloudprisbest',
+        param: ['password']
+      })
       return new Promise((resolve, reject) => {
-        login(userInfo).then(response => {
+        login(user).then(response => {
           const result = response.result
           Vue.ls.set(ACCESS_TOKEN, result.token, 7 * 24 * 60 * 60 * 1000)
           commit('SET_TOKEN', result.token)
