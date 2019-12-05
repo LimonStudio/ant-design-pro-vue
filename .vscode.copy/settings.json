@@ -1,0 +1,59 @@
+{
+    "editor.autoIndent": true,
+    "editor.fontSize": 16,
+    "editor.insertSpaces": true,
+    "editor.mouseWheelZoom": true,
+    "editor.multiCursorModifier": "ctrlCmd",
+    "editor.snippetSuggestions": "top",
+    "editor.tabSize": 2,
+    "editor.wordWrap": "on",
+    "editor.minimap.scale": 2,
+    "editor.formatOnSave": true,
+    "eslint.autoFixOnSave": true,
+    "eslint.validate": [
+        "javascript",
+        "javascriptreact",
+        {
+            "language": "html",
+            "autoFix": true
+        },
+        {
+            "language": "vue",
+            "autoFix": true
+        },
+        {
+            "language": "typescript",
+            "autoFix": true
+        },
+        {
+            "language": "typescriptreact",
+            "autoFix": true
+        }
+    ],
+    "extensions.ignoreRecommendations": false,
+    "files.associations": {
+        "*.env.mock": "dotenv",
+        "*.env.mock.local": "dotenv",
+        "*.wxa": "vue",
+        "*.wxc": "vue",
+        "*.wxp": "vue"
+    },
+    "files.autoSave": "onFocusChange",
+    "files.autoSaveDelay": 1000,
+    "files.eol": "auto",
+    "git.autofetch": true,
+    "gitlens.advanced.messages": {
+        "suppressShowKeyBindingsNotice": true,
+        "suppressUpdateNotice": true
+    },
+    "telemetry.enableCrashReporter": false,
+    "telemetry.enableTelemetry": false,
+    "terminal.integrated.env.windows": {
+        "LC_ALL": "en_US.UTF-8"
+    },
+    "typescript.locale": "zh-CN",
+    "vetur.format.defaultFormatter.js": "prettier",
+    "window.zoomLevel": 0,
+    "workbench.editor.tabSizing": "shrink",
+    "javascript.format.insertSpaceBeforeFunctionParenthesis": true,
+}
