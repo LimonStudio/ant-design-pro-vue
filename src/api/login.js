@@ -16,7 +16,7 @@ const scope = 'server'
 export function login (user) {
   const grantType = 'password'
   return axios({
-    url: '/auth/oauth/token',
+    url: api.Login,
     method: 'post',
     headers: {
       isToken: false,
@@ -41,11 +41,8 @@ export function getSmsCaptcha (parameter) {
 
 export function getInfo () {
   return axios({
-    url: '/user/info',
-    method: 'get',
-    headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
-    }
+    url: api.UserInfo,
+    method: 'get'
   })
 }
 
@@ -58,11 +55,8 @@ export function getCurrentUserNav (token) {
 
 export function logout () {
   return axios({
-    url: '/auth/logout',
-    method: 'post',
-    headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
-    }
+    url: api.Logout,
+    method: 'delete'
   })
 }
 
