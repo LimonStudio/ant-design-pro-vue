@@ -63,20 +63,6 @@
               <img slot="addonAfter" :src="code.src" @click="refreshCode()" />
             </a-input>
           </a-form-item>
-          <a-form-item>
-            <a-input
-              size="large"
-              type="text"
-              autocomplete="false"
-              placeholder="随机数: 1234567890"
-              v-decorator="[
-                'randomStr',
-                {rules: [{ required: true, message: '请输入随机数' }], validateTrigger: 'blur'}
-              ]"
-            >
-              <a-icon slot="prefix" type="lock" :style="{ color: 'rgba(0,0,0,.25)' }" />
-            </a-input>
-          </a-form-item>
         </a-tab-pane>
         <a-tab-pane key="tab2" tab="手机号登录">
           <a-form-item>
@@ -192,7 +178,8 @@ export default {
         // login type: 0 email, 1 username, 2 telephone
         loginType: 0,
         smsSendBtn: false
-      }
+      },
+      randomStr: ''
     }
   },
   created () {
@@ -212,11 +199,7 @@ export default {
     ...mapActions(['Login', 'Logout']),
     refreshCode () {
       const randomStr = randomLenNum(this.code.len, true)
-      console.log(randomStr)
-      this.form.setFieldsValue({
-        code: '',
-        randomStr: randomStr
-      })
+      this.randomStr = randomStr
       this.code.type === 'text' ? (this.code.value = randomStr) : (this.code.src = `/api/code?randomStr=${randomStr}`)
     },
     // handler
@@ -255,7 +238,7 @@ export default {
           delete loginParams.username
           loginParams[!state.loginType ? 'email' : 'username'] = values.username
           loginParams.password = values.password
-          loginParams.randomStr = values.randomStr
+          loginParams.randomStr = this.randomStr
           console.log('loginParams form', loginParams)
           Login(loginParams)
             .then(res => this.loginSuccess(res))
