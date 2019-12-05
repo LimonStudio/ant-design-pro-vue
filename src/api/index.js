@@ -7,6 +7,7 @@ const api = {
   SendSms: '/account/sms',
   SendSmsErr: '/account/sms_err',
   // get my info
-  UserInfo: '/admin/user/info'
+  UserInfo: '/admin/user/info',
+  Menu: '/admin/menu'
 }
 export default api

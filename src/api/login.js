@@ -46,9 +46,9 @@ export function getInfo () {
   })
 }
 
-export function getCurrentUserNav (token) {
+export function getCurrentUserNav () {
   return axios({
-    url: '/user/nav',
+    url: api.Menu,
     method: 'get'
   })
 }
